@@ -12,27 +12,33 @@ const User = require("./user");
 
 const app = express();
 
-mongoose.connect("mongodb+srv://Sbodazo:admin@cluster0.2q3gi.mongodb.net/Users?retryWrites=true&w=majority",
-{
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-},
-() => {
-  console.log("Database connesso");
-});
+mongoose.connect(
+  "mongodb+srv://Sbodazo:admin@cluster0.2q3gi.mongodb.net/Users?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  () => {
+    console.log("Database connesso");
+  }
+);
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(session({
-  secret: "trip2day",
-  resave: true,
-  saveUninitialized: true
-}))
+app.use(
+  session({
+    secret: "trip2day",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
 app.use(cookieParser("trip2day"));
 app.use(passport.initialize());
@@ -95,10 +101,25 @@ const planner = [
       },
     ],
     friendList: [
-      { nickname: "mario", img: "https://nintendoomed.it/wp-content/uploads/2018/10/mario.0.jpg" },
-      { nickname: "luigi", img: "https://i.etsystatic.com/11355950/r/il/16ad26/1259915155/il_570xN.1259915155_jheb.jpg" },
-      { nickname: "wario", img: "https://i.pinimg.com/originals/56/5e/27/565e27de74219823cb47c0eddcbf5f4a.jpg" },
-      { nickname: "waluigi", img: "https://assets.change.org/photos/4/qh/tq/wAQHtqjWnDybkjQ-800x450-noPad.jpg?1521521140" },
+      {
+        nickname: "Mario",
+        img: "https://nintendoomed.it/wp-content/uploads/2018/10/mario.0.jpg",
+      },
+      {
+        nickname: "Luigi",
+        img:
+          "https://i.etsystatic.com/11355950/r/il/16ad26/1259915155/il_570xN.1259915155_jheb.jpg",
+      },
+      {
+        nickname: "Wario",
+        img:
+          "https://i.pinimg.com/originals/56/5e/27/565e27de74219823cb47c0eddcbf5f4a.jpg",
+      },
+      {
+        nickname: "Waluigi",
+        img:
+          "https://assets.change.org/photos/4/qh/tq/wAQHtqjWnDybkjQ-800x450-noPad.jpg?1521521140",
+      },
     ],
   },
 ];
@@ -120,20 +141,113 @@ app.post("/auth", (req, res, next) => {
 });
 
 app.post("/register", (req, res) => {
-  User.findOne({username: req.body.username}, async (err, doc) => {
+  User.findOne({ username: req.body.username }, async (err, doc) => {
     if (err) throw err;
     if (doc) res.send("User already Exists");
     if (!doc) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      const newUser = new User ({
+      const newUser = new User({
         username: req.body.username,
-        password: hashedPassword
+        password: hashedPassword,
       });
       await newUser.save();
       res.send("User Created");
     }
   });
 });
+
+let pendingquestion = [
+  {
+    question: {
+      img:
+        "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80 ",
+      name: "Mario",
+      where: "Rome",
+      id: "hbkIBkjuihk",
+    },
+    response: [],
+  },
+  {
+    question: {
+      img:
+        "https://images.unsplash.com/photo-1543783207-ec64e4d95325?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80",
+      name: "Luigi",
+      where: "Madrid",
+      id: "iUBjoKMlk",
+    },
+    response: [],
+  },
+];
+
+app
+  .route("/suggestion")
+  .get((req, res) => {
+    let suggestion = pendingquestion.map((request) => {
+      return request.question;
+    });
+    res.json(suggestion);
+  })
+  .post((req, res) => {
+    let position = pendingquestion.findIndex((request) => {
+      return request.question.id === req.body.id;
+    });
+    pendingquestion[position].response.push(req.body);
+    res.json({ status: pendingquestion });
+  })
+  .all((req, res) => {
+    res.json({ error: "Unknown Method" });
+  });
+
+const friendProfile = [
+  {
+    nickname: "Mario",
+    img: "https://nintendoomed.it/wp-content/uploads/2018/10/mario.0.jpg",
+    text:"it's a me, Mario",
+  },
+  {
+    nickname: "Luigi",
+    img:
+      "https://i.etsystatic.com/11355950/r/il/16ad26/1259915155/il_570xN.1259915155_jheb.jpg",
+      text:"nobody loves me",
+  },
+  {
+    nickname: "Wario",
+    img:
+      "https://i.pinimg.com/originals/56/5e/27/565e27de74219823cb47c0eddcbf5f4a.jpg",
+      text:"wawawawaawwawaawawawaw",
+  },
+  {
+    nickname: "Waluigi",
+    img:
+      "https://assets.change.org/photos/4/qh/tq/wAQHtqjWnDybkjQ-800x450-noPad.jpg?1521521140",
+      text:"frase ad effetto",
+  },
+];
+
+app
+  .route("/friendprofile/:name")
+  .get((req, res) => {
+    let profile = friendProfile.filter((friend) => {
+      return friend.nickname === req.params.name;
+    });
+    let request= pendingquestion.filter((element) => {
+      return element.question.name === req.params.name;
+    }).map((element) => {
+    return element.question;
+  });
+    let profileinfo = {
+      nickname: profile[0].nickname,
+      img: profile[0].img,
+      text: profile[0].text,
+      request:request};
+    res.json(profileinfo);
+  })
+  .post((req, res) => {
+    res.json();
+  })
+  .all((req, res) => {
+    res.json({ error: "Unknown Method" });
+  });
 
 app
   .route("/:nickname/planner/:where")
