@@ -106,11 +106,13 @@ const planner = [
 app.post("/auth", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) throw err;
-    if (!user) res.send("No User Exists");
-    else {
+    if (!user) {
+      console.log(req.body);
+      res.send(req.body.username);
+    } else {
       req.logIn(user, (err) => {
         if (err) throw err;
-        res.send("Successfully Authenticated");
+        res.send(req.user);
         console.log(req.user);
       });
     }
