@@ -45,13 +45,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("./passportConfig")(passport);
 
-const accounts = [
-  { nickname: "nickname", password: "password" },
-  { nickname: "aaaaaaa", password: "bbbbbb" },
-  { nickname: "mariobiondi", password: "thisiswhatyouare" },
-  { nickname: "accountbellissimo", password: "passwordok" },
-];
-
 const planner = [
   {
     nickname: "nickname",
@@ -198,29 +191,63 @@ app
     res.json({ error: "Unknown Method" });
   });
 
+let mysuggestion = [
+  {
+    where: "London",
+    activity: [
+      {
+        category: "monument",
+        activity: "big ben",
+        cost: "$$",
+        timeNeeded: "3",
+        description: "hbjbjmn jhbjbkjnbkjnkjnlkllk",
+        photo: "photo",
+      },
+      {
+        category: "restaurant",
+        activity: "chef Ramsay",
+        cost: "$$$$",
+        timeNeeded: "1",
+        description: "khbsdlzxkcnksjdnzclkaldksnclkns",
+        photo: "photo",
+      },
+    ],
+  },
+];
+
+app
+  .route("/mysuggestion")
+  .get((req, res) => {
+    
+    res.json(mysuggestion);
+  })
+  .all((req, res) => {
+    res.json({ error: "Unknown Method" });
+  });
+
 const friendProfile = [
   {
     nickname: "Mario",
     img: "https://nintendoomed.it/wp-content/uploads/2018/10/mario.0.jpg",
-    text:"it's a me, Mario",
+    text: "it's a me, Mario",
   },
   {
     nickname: "Luigi",
     img:
       "https://i.etsystatic.com/11355950/r/il/16ad26/1259915155/il_570xN.1259915155_jheb.jpg",
-      text:"nobody loves me",
+    text: "nobody loves me",
   },
   {
     nickname: "Wario",
     img:
       "https://i.pinimg.com/originals/56/5e/27/565e27de74219823cb47c0eddcbf5f4a.jpg",
-      text:"wawawawaawwawaawawawaw",
+    text: "wawawawaawwawaawawawaw",
   },
   {
     nickname: "Waluigi",
     img:
       "https://assets.change.org/photos/4/qh/tq/wAQHtqjWnDybkjQ-800x450-noPad.jpg?1521521140",
-      text:"frase ad effetto",
+    text: "frase ad effetto",
   },
 ];
 
@@ -230,16 +257,19 @@ app
     let profile = friendProfile.filter((friend) => {
       return friend.nickname === req.params.name;
     });
-    let request= pendingquestion.filter((element) => {
-      return element.question.name === req.params.name;
-    }).map((element) => {
-    return element.question;
-  });
+    let request = pendingquestion
+      .filter((element) => {
+        return element.question.name === req.params.name;
+      })
+      .map((element) => {
+        return element.question;
+      });
     let profileinfo = {
       nickname: profile[0].nickname,
       img: profile[0].img,
       text: profile[0].text,
-      request:request};
+      request: request,
+    };
     res.json(profileinfo);
   })
   .post((req, res) => {
