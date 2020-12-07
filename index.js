@@ -9,19 +9,15 @@ const cors = require("cors");
 const port = 3001;
 const bodyParser = require("body-parser");
 const User = require("./user");
+require('dotenv').config();
 
 const app = express();
 
-mongoose.connect(
-  "mongodb+srv://Sbodazo:admin@cluster0.2q3gi.mongodb.net/Users?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  () => {
-    console.log("Database connesso");
-  }
-);
+mongoose.connect(process.env.DATABASE_URL, {useUnifiedTopology: true, useNewUrlParser: true });
+const db = mongoose.connection;
+db.on('error', (error)=>console.error(error));
+db.once('open', ()=>console.log("connected to db"));
+
 
 app.use(
   cors({
@@ -40,10 +36,13 @@ app.use(
   })
 );
 
-app.use(cookieParser("trip2day"));
-app.use(passport.initialize());
-app.use(passport.session());
-require("./passportConfig")(passport);
+// app.use(cookieParser("trip2day"));
+// app.use(passport.initialize());
+// app.use(passport.session());
+// require("./passportConfig")(passport);
+
+const suggestionRouter = require('./routes/suggestion');
+app.use('/suggestion', suggestionRouter);
 
 const planner = [
   {
@@ -117,37 +116,37 @@ const planner = [
   },
 ];
 
-app.post("/auth", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
-    if (!user) {
-      console.log(req.body);
-      res.send(req.body.username);
-    } else {
-      req.logIn(user, (err) => {
-        if (err) throw err;
-        res.send(req.user);
-        console.log(req.user);
-      });
-    }
-  })(req, res, next);
-});
+// app.post("/auth", (req, res, next) => {
+//   passport.authenticate("local", (err, user, info) => {
+//     if (err) throw err;
+//     if (!user) {
+//       console.log(req.body);
+//       res.send(req.body.username);
+//     } else {
+//       req.logIn(user, (err) => {
+//         if (err) throw err;
+//         res.send(req.user);
+//         console.log(req.user);
+//       });
+//     }
+//   })(req, res, next);
+// });
 
-app.post("/register", (req, res) => {
-  User.findOne({ username: req.body.username }, async (err, doc) => {
-    if (err) throw err;
-    if (doc) res.send("User already Exists");
-    if (!doc) {
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      const newUser = new User({
-        username: req.body.username,
-        password: hashedPassword,
-      });
-      await newUser.save();
-      res.send("User Created");
-    }
-  });
-});
+// app.post("/register", (req, res) => {
+//   User.findOne({ username: req.body.username }, async (err, doc) => {
+//     if (err) throw err;
+//     if (doc) res.send("User already Exists");
+//     if (!doc) {
+//       const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//       const newUser = new User({
+//         username: req.body.username,
+//         password: hashedPassword,
+//       });
+//       await newUser.save();
+//       res.send("User Created");
+//     }
+//   });
+// });
 
 let pendingquestion = [
   {
@@ -173,7 +172,7 @@ let pendingquestion = [
 ];
 
 app
-  .route("/suggestion")
+  .route("/ReqSuggestion")
   .get((req, res) => {
     let suggestion = pendingquestion.map((request) => {
       return request.question;
