@@ -1,0 +1,6 @@
+npm init
+npm install express mongoose
+npm i --save-dev dotenv nodemon
+
+
+npm run devStart
