@@ -101,7 +101,6 @@ const planner = [
           "https://images.unsplash.com/photo-1473896100090-53523650d4c6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=749&q=80",
         fromDate: "2021-07-25",
         toDate: "2021-07-30",
-        textRequest: "Consigliatemi luoghi dei film di mr Bean",
         suggestion: [
           {
             id:'mhbdikjnj39889',
@@ -134,9 +133,8 @@ const planner = [
             photoUrl: "",
           },
         ],
-        myPlan: []
-      },
-    ],
+        myPlan: [
+    ],}],
     friendList: [
       {
         nickname: "Mario",
@@ -160,23 +158,23 @@ const planner = [
     ],
   },
   {
-    nickname: "Lorenzo Martinoli",
+    nickname: "mariorossi@mario.com",
+    age: "35",
+    from: "Cinisello Balsamo",
     img:
       "https://images.unsplash.com/photo-1495366691023-cc4eadcc2d7e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
 
     planner: [
       {
-        where: "London",
-        id:"Lnd134516",
-        title:"Sulle orme di mr. Bean",
+        where: "Genova",
+        id:"Gn234V4jjk",
+        title:"Alla scoperta dei caruggi",
         img:
-          "https://images.unsplash.com/photo-1473896100090-53523650d4c6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=749&q=80",
-        fromDate: "2021-07-25",
-        toDate: "2021-07-30",
-        textRequest: "Consigliatemi luoghi dei film di mr Bean",
+          "https://www.pimpmytrip.it/wp-content/uploads/2020/03/cosa-vedere-genova.jpg",
+        fromDate: "2021-05-09",
+        toDate: "2021-05-15",
         suggestion: [
           {
-            accepted:false,
             id:'mhbdikjnj39889',
             fromWho: "Lorenzo",
             name: "Big Ben",
@@ -187,7 +185,6 @@ const planner = [
             photoUrl: "",
           },
           {
-            accepted:false,
             id:'kjhb66758789489',
             fromWho: "Lorenzo",
             name: "restaurant Londonbridge",
@@ -198,7 +195,6 @@ const planner = [
             photoUrl: "",
           },
           {
-            accepted:true,
             id:'775785ubhigngb',
             fromWho: "Lorenzo",
             name: "queen museum",
@@ -209,20 +205,17 @@ const planner = [
             photoUrl: "",
           },
         ],
-        myPlan: [
-          {
-            title: "London Eye",
-            startDate: new Date(2021, 7, 26, 9, 30),
-            endDate: new Date(2021, 7, 26, 11, 30),
-          },
-          {
-            title: "Piccadilly circus",
-            startDate: new Date(2021, 7, 28, 12, 0),
-            endDate: new Date(2021, 7, 28, 13, 0),
-          },
-        ],
-      },
-    ],
+        myPlan: [  {
+          id:'775785ubhigngb',
+          fromWho: "Il Porto Antico",
+          name: "Il Porto Antico",
+          category: "monument",
+          description: "bello da paura",
+          cost: "$$$$",
+          timeNeeded: 2,
+          photoUrl: "",
+        }
+    ],}],
     friendList: [
       {
         nickname: "Mario",
@@ -287,6 +280,7 @@ let pendingquestion = [
       name: "Mario",
       where: "Rome",
       id: "hbkIBkjuihk",
+      text:"consigliatemi posti dove si mangia bene",
     },
     response: [],
   },
@@ -297,57 +291,73 @@ let pendingquestion = [
       name: "Luigi",
       where: "Madrid",
       id: "iUBjoKMlk",
+      text:"Quali sono i migliori locali notturni?",
     },
     response: [],
   },
 ];
 
 app
-  .route("/ReqSuggestion")
-  .get((req, res) => {
-    let suggestion = pendingquestion.map((request) => {
-      return request.question;
-    });
-    res.json(suggestion);
-  })
+  .route("/AskSuggestion")
   .post((req, res) => {
-    let position = pendingquestion.findIndex((request) => {
-      return request.question.id === req.body.id;
-    });
-    pendingquestion[position].response.push(req.body);
+    pendingquestion.push({question:req.body});
     res.json({ status: pendingquestion });
   })
   .all((req, res) => {
     res.json({ error: "Unknown Method" });
   });
 
-let mysuggestion = [
-  {
-    where: "London",
-    activity: [
-      {
-        category: "monument",
-        activity: "big ben",
-        cost: "$$",
-        timeNeeded: "3",
-        description: "hbjbjmn jhbjbkjnbkjnkjnlkllk",
-        photo: "photo",
-      },
-      {
-        category: "restaurant",
-        activity: "chef Ramsay",
-        cost: "$$$$",
-        timeNeeded: "1",
-        description: "khbsdlzxkcnksjdnzclkaldksnclkns",
-        photo: "photo",
-      },
-    ],
-  },
-];
 
 app
-  .route("/mysuggestion")
+  .route("/ReqSuggestion/:name")
   .get((req, res) => {
+    let suggestion = pendingquestion/*.filter((element)=>{return element.question.name!==req.params.name})*/.map((request) => {
+      return request.question;
+    });
+    res.json(suggestion);
+  })
+  .post((req, res) => {
+   let question =  pendingquestion.find((request) => {
+    return request.question.id === req.body.id;
+  }); 
+    let indexuser= planner.findIndex((user)=>{return user.nickname === question.question.name});
+    let indextrip =planner[indexuser].planner.findIndex((plan)=>{return plan.id === question.question.id});
+    planner[indexuser].planner[indextrip].suggestion.push(req.body)
+    res.json({ status:' ok' });
+  })
+  .all((req, res) => {
+    res.json({ error: "Unknown Method" });
+  });
+
+// let mysuggestion = [
+//   {
+//     where: "London",
+//     activity: [
+//       {
+//         category: "monument",
+//         activity: "big ben",
+//         cost: "$$",
+//         timeNeeded: "3",
+//         description: "hbjbjmn jhbjbkjnbkjnkjnlkllk",
+//         photo: "photo",
+//       },
+//       {
+//         category: "restaurant",
+//         activity: "chef Ramsay",
+//         cost: "$$$$",
+//         timeNeeded: "1",
+//         description: "khbsdlzxkcnksjdnzclkaldksnclkns",
+//         photo: "photo",
+//       },
+//     ],
+//   },
+// ];
+
+app
+  .route("/mysuggestion/:name")
+  .get((req, res) => {
+    let indexuser= planner.findIndex((user)=>{return user.nickname === req.params.name});
+    let mysuggestion =planner[indexuser].planner.map((plan)=>{return{where:plan.where, activity: plan.myPlan}});
     
     res.json(mysuggestion);
   })
@@ -430,12 +440,16 @@ app
     let planIndex = userplanner.planner.findIndex((planner) => {
       return planner.id === req.params.plannerid;
     });
-    planner[userIndex].planner[planIndex].where = req.body.city;
-    planner[userIndex].planner[planIndex].title = req.body.title;
-    planner[userIndex].planner[planIndex].fromDate = req.body.fromDate;
-    planner[userIndex].planner[planIndex].toDate = req.body.toDate;
-    planner[userIndex].planner[planIndex].toDate = req.body.toDate;
-    planner[userIndex].planner[planIndex].img = req.body.img;
+    planner[userIndex].planner[planIndex].where = req.body.selectedPlan.city;
+    planner[userIndex].planner[planIndex].title = req.body.selectedPlan.title;
+    planner[userIndex].planner[planIndex].fromDate = req.body.selectedPlan.fromDate;
+    planner[userIndex].planner[planIndex].toDate = req.body.selectedPlan.toDate;
+    planner[userIndex].planner[planIndex].toDate = req.body.selectedPlan.toDate;
+    planner[userIndex].planner[planIndex].img = req.body.selectedPlan.img;
+    planner[userIndex].planner[planIndex].myPlan = req.body.plan;
+    planner[userIndex].planner[planIndex].suggestion = req.body.suggestion;
+
+
     res.json({status:'saved'});
   })
   .post((req, res) => {
