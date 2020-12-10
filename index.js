@@ -11,6 +11,7 @@ const cors = require("cors");
 const port = 3001;
 const bodyParser = require("body-parser");
 const User = require("./user");
+const fileUpload = require("express-fileupload");
 require('dotenv').config();
 
 const app = express();
@@ -20,12 +21,9 @@ const app = express();
 // any request coming in, transfer all body into JSON
 app.use(express.json());
 
-// allow cross origin from client localhost
-app.use(cors());
-
 // creating POST endpoint /file
 app.post("/file", upload.single("file"), (req, res) => {
-  console.log("body", req.file.length, req.file);
+  console.log("body", req.file);
 
   // here you can do anything that you want for the file
   // ex: you want to save it to database here
@@ -57,6 +55,26 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+//ciao sono lorenzo il fantasma del natale futuro e questo è un tentativo di upload
+app.use(fileUpload());
+app.use(express.static("images"));
+
+app.post("/upload", (req, res) => {
+  if (!req.files) {
+    return res.status(500).send({ msg: "file is not found"})
+  }
+
+  const myFile = req.files.file;
+
+  myFile.mv(`${__dirname}/images/${myFile.name}`, function (err) {
+    if (err) {
+      console.log(err)
+      return res.status(500).send({msg: "Error occurred"});
+    }
+    return res.send({name: myFile.name, path: `/${myFile.name}`});
+  });
+});
 
 // app.use(cookieParser("trip2day"));
 // app.use(passport.initialize());
