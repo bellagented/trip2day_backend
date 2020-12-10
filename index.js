@@ -33,16 +33,6 @@ app.post("/file", upload.single("file"), (req, res) => {
   res.json({ success: true });
 });
 ///End Oraldo upload//
-mongoose.connect(
-  "mongodb+srv://Sbodazo:admin@cluster0.2q3gi.mongodb.net/Users?retryWrites=true&w=majority",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  () => {
-    console.log("Database connesso");
-  }
-);
 
 mongoose.connect(process.env.DATABASE_URL, {useUnifiedTopology: true, useNewUrlParser: true });
 const db = mongoose.connection;
