@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+const upload = multer();
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
@@ -12,11 +14,41 @@ const User = require("./user");
 require('dotenv').config();
 
 const app = express();
+//Start Oraldo
+
+
+// any request coming in, transfer all body into JSON
+app.use(express.json());
+
+// allow cross origin from client localhost
+app.use(cors());
+
+// creating POST endpoint /file
+app.post("/file", upload.single("file"), (req, res) => {
+  console.log("body", req.file.length, req.file);
+
+  // here you can do anything that you want for the file
+  // ex: you want to save it to database here
+
+  res.json({ success: true });
+});
+///End Oraldo upload//
+mongoose.connect(
+  "mongodb+srv://Sbodazo:admin@cluster0.2q3gi.mongodb.net/Users?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  () => {
+    console.log("Database connesso");
+  }
+);
 
 mongoose.connect(process.env.DATABASE_URL, {useUnifiedTopology: true, useNewUrlParser: true });
 const db = mongoose.connection;
 db.on('error', (error)=>console.error(error));
 db.once('open', ()=>console.log("connected to db"));
+
 
 
 app.use(
