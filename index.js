@@ -11,9 +11,11 @@ const cors = require("cors");
 const port = 3001;
 const bodyParser = require("body-parser");
 const User = require("./user");
+require('dotenv').config();
 
 const app = express();
 //Start Oraldo
+
 
 // any request coming in, transfer all body into JSON
 app.use(express.json());
@@ -42,6 +44,13 @@ mongoose.connect(
   }
 );
 
+mongoose.connect(process.env.DATABASE_URL, {useUnifiedTopology: true, useNewUrlParser: true });
+const db = mongoose.connection;
+db.on('error', (error)=>console.error(error));
+db.once('open', ()=>console.log("connected to db"));
+
+
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -59,51 +68,134 @@ app.use(
   })
 );
 
-app.use(cookieParser("trip2day"));
-app.use(passport.initialize());
-app.use(passport.session());
-require("./passportConfig")(passport);
+// app.use(cookieParser("trip2day"));
+// app.use(passport.initialize());
+// app.use(passport.session());
+// require("./passportConfig")(passport);
 
-const accounts = [
-  { nickname: "nickname", password: "password" },
-  { nickname: "aaaaaaa", password: "bbbbbb" },
-  { nickname: "mariobiondi", password: "thisiswhatyouare" },
-  { nickname: "accountbellissimo", password: "passwordok" },
-];
+const suggestionRouter = require('./routes/suggestion');
+app.use('/suggestion', suggestionRouter);
 
 const planner = [
   {
-    nickname: "nickname",
-    age: "30",
-    from: "acquario di cattolica",
+    nickname: "bellagented@gmail.com",
+    age: "25",
+    from: "Treviglio",
     img:
       "https://images.unsplash.com/photo-1495366691023-cc4eadcc2d7e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
 
     planner: [
       {
         where: "London",
+        id:"Lnd134516",
+        title:"Sulle orme di mr. Bean",
         img:
           "https://images.unsplash.com/photo-1473896100090-53523650d4c6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=749&q=80",
-        fromWhen: "",
-        toWhen: "",
-        textRequest: "voglio andare in posti bellissimi",
-        response: [
+        fromDate: "2021-07-25",
+        toDate: "2021-07-30",
+        textRequest: "Consigliatemi luoghi dei film di mr Bean",
+        suggestion: [
           {
-            fromWho: "gianni",
-            name: "Ristorante Pensavo Peggio",
-            category: "restaurant",
-            description: "fa schifo come te",
+            id:'mhbdikjnj39889',
+            fromWho: "Lorenzo",
+            name: "Big Ben",
+            category: "monument",
+            description: "bello da paura",
+            cost: "$$$$",
+            timeNeeded: 2,
+            photoUrl: "",
+          },
+          {
+            id:'kjhb66758789489',
+            fromWho: "Lorenzo",
+            name: "restaurant Londonbridge",
+            category: "monument",
+            description: "bello da paura",
+            cost: "$$$$",
+            timeNeeded: 2,
+            photoUrl: "",
+          },
+          {
+            id:'775785ubhigngb',
+            fromWho: "Lorenzo",
+            name: "queen museum",
+            category: "monument",
+            description: "bello da paura",
             cost: "$$$$",
             timeNeeded: 2,
             photoUrl: "",
           },
         ],
-        savedResponse: [
+        myPlan: []
+      },
+    ],
+    friendList: [
+      {
+        nickname: "Mario",
+        img: "https://nintendoomed.it/wp-content/uploads/2018/10/mario.0.jpg",
+      },
+      {
+        nickname: "Luigi",
+        img:
+          "https://i.etsystatic.com/11355950/r/il/16ad26/1259915155/il_570xN.1259915155_jheb.jpg",
+      },
+      {
+        nickname: "Wario",
+        img:
+          "https://i.pinimg.com/originals/56/5e/27/565e27de74219823cb47c0eddcbf5f4a.jpg",
+      },
+      {
+        nickname: "Waluigi",
+        img:
+          "https://assets.change.org/photos/4/qh/tq/wAQHtqjWnDybkjQ-800x450-noPad.jpg?1521521140",
+      },
+    ],
+  },
+  {
+    nickname: "Lorenzo Martinoli",
+    img:
+      "https://images.unsplash.com/photo-1495366691023-cc4eadcc2d7e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80",
+
+    planner: [
+      {
+        where: "London",
+        id:"Lnd134516",
+        title:"Sulle orme di mr. Bean",
+        img:
+          "https://images.unsplash.com/photo-1473896100090-53523650d4c6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=749&q=80",
+        fromDate: "2021-07-25",
+        toDate: "2021-07-30",
+        textRequest: "Consigliatemi luoghi dei film di mr Bean",
+        suggestion: [
           {
-            fromWho: "gianni",
-            name: "Ristorante Pensavo Peggio",
-            category: "restaurant",
-            description: "fa schifo come te",
+            accepted:false,
+            id:'mhbdikjnj39889',
+            fromWho: "Lorenzo",
+            name: "Big Ben",
+            category: "monument",
+            description: "bello da paura",
+            cost: "$$$$",
+            timeNeeded: 2,
+            photoUrl: "",
+          },
+          {
+            accepted:false,
+            id:'kjhb66758789489',
+            fromWho: "Lorenzo",
+            name: "restaurant Londonbridge",
+            category: "monument",
+            description: "bello da paura",
+            cost: "$$$$",
+            timeNeeded: 2,
+            photoUrl: "",
+          },
+          {
+            accepted:true,
+            id:'775785ubhigngb',
+            fromWho: "Lorenzo",
+            name: "queen museum",
+            category: "monument",
+            description: "bello da paura",
             cost: "$$$$",
             timeNeeded: 2,
             photoUrl: "",
@@ -111,10 +203,14 @@ const planner = [
         ],
         myPlan: [
           {
-            name: "London Eye",
-            fromWhen: 10,
-            toWhen: 12,
-            description: "bella ma non ci vivrei",
+            title: "London Eye",
+            startDate: new Date(2021, 7, 26, 9, 30),
+            endDate: new Date(2021, 7, 26, 11, 30),
+          },
+          {
+            title: "Piccadilly circus",
+            startDate: new Date(2021, 7, 28, 12, 0),
+            endDate: new Date(2021, 7, 28, 13, 0),
           },
         ],
       },
@@ -143,37 +239,37 @@ const planner = [
   },
 ];
 
-app.post("/auth", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
-    if (err) throw err;
-    if (!user) {
-      console.log(req.body);
-      res.send(req.body.username);
-    } else {
-      req.logIn(user, (err) => {
-        if (err) throw err;
-        res.send(req.user);
-        console.log(req.user);
-      });
-    }
-  })(req, res, next);
-});
+// app.post("/auth", (req, res, next) => {
+//   passport.authenticate("local", (err, user, info) => {
+//     if (err) throw err;
+//     if (!user) {
+//       console.log(req.body);
+//       res.send(req.body.username);
+//     } else {
+//       req.logIn(user, (err) => {
+//         if (err) throw err;
+//         res.send(req.user);
+//         console.log(req.user);
+//       });
+//     }
+//   })(req, res, next);
+// });
 
-app.post("/register", (req, res) => {
-  User.findOne({ username: req.body.username }, async (err, doc) => {
-    if (err) throw err;
-    if (doc) res.send("User already Exists");
-    if (!doc) {
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      const newUser = new User({
-        username: req.body.username,
-        password: hashedPassword,
-      });
-      await newUser.save();
-      res.send("User Created");
-    }
-  });
-});
+// app.post("/register", (req, res) => {
+//   User.findOne({ username: req.body.username }, async (err, doc) => {
+//     if (err) throw err;
+//     if (doc) res.send("User already Exists");
+//     if (!doc) {
+//       const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//       const newUser = new User({
+//         username: req.body.username,
+//         password: hashedPassword,
+//       });
+//       await newUser.save();
+//       res.send("User Created");
+//     }
+//   });
+// });
 
 let pendingquestion = [
   {
@@ -199,7 +295,7 @@ let pendingquestion = [
 ];
 
 app
-  .route("/suggestion")
+  .route("/ReqSuggestion")
   .get((req, res) => {
     let suggestion = pendingquestion.map((request) => {
       return request.question;
@@ -212,6 +308,40 @@ app
     });
     pendingquestion[position].response.push(req.body);
     res.json({ status: pendingquestion });
+  })
+  .all((req, res) => {
+    res.json({ error: "Unknown Method" });
+  });
+
+let mysuggestion = [
+  {
+    where: "London",
+    activity: [
+      {
+        category: "monument",
+        activity: "big ben",
+        cost: "$$",
+        timeNeeded: "3",
+        description: "hbjbjmn jhbjbkjnbkjnkjnlkllk",
+        photo: "photo",
+      },
+      {
+        category: "restaurant",
+        activity: "chef Ramsay",
+        cost: "$$$$",
+        timeNeeded: "1",
+        description: "khbsdlzxkcnksjdnzclkaldksnclkns",
+        photo: "photo",
+      },
+    ],
+  },
+];
+
+app
+  .route("/mysuggestion")
+  .get((req, res) => {
+    
+    res.json(mysuggestion);
   })
   .all((req, res) => {
     res.json({ error: "Unknown Method" });
@@ -272,18 +402,40 @@ app
   });
 
 app
-  .route("/:nickname/planner/:where")
+  .route("/:nickname/planner/:plannerid")
   .get((req, res) => {
     let userplanner = planner.find((userplanner) => {
       return req.params.nickname === userplanner.nickname;
     });
     let response = userplanner.planner.find((planner) => {
-      return planner.where === req.params.where;
+      return planner.id === req.params.plannerid;
     });
     res.json(response);
   })
+  .patch((req, res) => {
+    let userplanner = planner.find((userplanner) => {
+      return req.params.nickname === userplanner.nickname;
+    });
+    let userIndex = planner.findIndex((userplanner) => {
+      return req.params.nickname === userplanner.nickname;
+    });
+    let planIndex = userplanner.planner.findIndex((planner) => {
+      return planner.id === req.params.plannerid;
+    });
+    planner[userIndex].planner[planIndex].where = req.body.city;
+    planner[userIndex].planner[planIndex].title = req.body.title;
+    planner[userIndex].planner[planIndex].fromDate = req.body.fromDate;
+    planner[userIndex].planner[planIndex].toDate = req.body.toDate;
+    planner[userIndex].planner[planIndex].toDate = req.body.toDate;
+    planner[userIndex].planner[planIndex].img = req.body.img;
+    res.json({status:'saved'});
+  })
   .post((req, res) => {
-    res.json();
+    let userIndex = planner.findIndex((userplanner) => {
+      return req.params.nickname === userplanner.nickname;
+    });
+   planner[userIndex].planner.push(req.body);
+    res.json({status:'added'});
   })
   .all((req, res) => {
     res.json({ error: "Unknown Method" });

@@ -1,0 +1,32 @@
+
+GET http://localhost:3000/suggestion/pippo
+
+
+###
+
+PATCH http://localhost:3000/suggestion/change
+Content-Type: application/json
+
+{
+  "id":"5fc8ef3dc211fd3843734c73"
+}
+
+###
+
+DELETE http://localhost:3000/suggestion/delete
+Content-Type: application/json
+
+{
+  "id":"5fc8ef3dc211fd3843734c73"
+}
+
+###
+POST http://localhost:3000/suggestion/
+Content-Type: application/json
+
+{
+  "from":"Pietro",
+  "to":"pippo",
+  "store": "mangiar Male",
+  "accepted": "false"
+}
