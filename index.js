@@ -311,7 +311,7 @@ app
 app
   .route("/ReqSuggestion/:name")
   .get((req, res) => {
-    let suggestion = pendingquestion/*.filter((element)=>{return element.question.name!==req.params.name})*/.map((request) => {
+    let suggestion = pendingquestion.filter((element)=>{return element.question.name!==req.params.name}).map((request) => {
       return request.question;
     });
     res.json(suggestion);
@@ -322,6 +322,8 @@ app
   }); 
     let indexuser= planner.findIndex((user)=>{return user.nickname === question.question.name});
     let indextrip =planner[indexuser].planner.findIndex((plan)=>{return plan.id === question.question.id});
+    let sugg = req.body;
+    sugg.id=Math.random().toString(16).substr(8, 10);
     planner[indexuser].planner[indextrip].suggestion.push(req.body)
     res.json({ status:' ok' });
   })
