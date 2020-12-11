@@ -324,7 +324,7 @@ app
     let indextrip =planner[indexuser].planner.findIndex((plan)=>{return plan.id === question.question.id});
     let sugg = req.body;
     sugg.id=Math.random().toString(16).substr(8, 10);
-    planner[indexuser].planner[indextrip].suggestion.push(req.body)
+    planner[indexuser].planner[indextrip].suggestion.push(sugg);
     res.json({ status:' ok' });
   })
   .all((req, res) => {
